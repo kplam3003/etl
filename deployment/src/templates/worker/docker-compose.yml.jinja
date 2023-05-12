@@ -1,0 +1,412 @@
+version: '3.1'
+
+services:
+  
+  {% for prep_ix in range(N_PREPROCESSORS|int) %}
+  {{PREFIX}}-preprocessor-{{prep_ix}}:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-preprocessor:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SRC_DIR=/app/data/crawl
+      - DST_DIR=/app/data/preprocess
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_preprocess
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_preprocess_preprocessors
+      - LOGGER_NAME={{PREFIX}}_etl_preprocessor
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      - GOOGLE_MAPS_API_KEY={{GOOGLE_MAPS_API_KEY}}
+      - MONGODB_DATABASE_KEY_FILE=/app/certs/dpworker.pem
+      - MONGODB_DATABASE_ROOT_CA=/app/certs/root-ca.pem
+      - ENCODE_SENTENCE_API=http://{{PREFIX}}-prediction-service:8083/encode-sentence
+    volumes:
+      - /home/hien_hoang/worker/preprocess:/app/data
+  {% endfor %}
+
+  {% for tran_ix in range(N_TRANSLATORS) %}
+  {{PREFIX}}-translator-{{tran_ix}}:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-translator:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SRC_DIR=/app/data/preprocess
+      - DST_DIR=/app/data/translate
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_translate
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_translate_translators
+      - TRANSLATE_API=http://{{PREFIX}}-translate-api:8080/translate
+      - TRANSLATE_SECRET=TIDdITanFCHw5CD97pTIDdITanFCHw5CD97pTIDdITanFCHw5CD97p
+      - LOGGER_NAME={{PREFIX}}_etl_translator
+      - TRANSFORM_BATCH_SIZE=10
+      - MONGODB_DATABASE_URI={{MONGODB_DATABASE_URI}}
+      - MONGODB_DATABASE_NAME={{MONGODB_DATABASE_NAME}}
+    volumes:
+      - /home/hien_hoang/worker/translate:/app/data
+  {% endfor %}
+
+  {{PREFIX}}-loader:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-loader:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SRC_DIR=/app/data/nlp
+      - DST_DIR=/app/data/load
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_load
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_load_loaders
+      - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+      - GCP_BQ_TABLE_VOC_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_review_stats
+      - GCP_BQ_TABLE_BATCH_STATUS={{GCP_PROJECT}}.{{PREFIX}}_staging.batch_status
+      - GCP_BQ_TABLE_CASESTUDY_COMPANY_SOURCE={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_company_source
+      - GCP_BQ_TABLE_NLP_OUTPUT_CASE_STUDY={{GCP_PROJECT}}.{{PREFIX}}_dwh.nlp_output_case_study
+      - GCP_BQ_TABLE_SUMMARY_TABLE={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table
+      - GCP_BQ_TABLE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_dimension_config
+      - GCP_BQ_TABLE_LANGUAGE_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.language_trans
+      - GCP_BQ_TABLE_POLARITY_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.polarity_trans
+      - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+      - GCP_BQ_TABLE_VOE_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_review_stats
+      - GCP_BQ_TABLE_VOE_JOB={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_job
+      - GCP_BQ_TABLE_VOE_COMPANY={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_company
+      - GCP_BQ_TABLE_VOC_CRAWL_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voc_crawl_statistics
+      - GCP_BQ_TABLE_VOE_CRAWL_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_crawl_statistics
+      - GCP_BQ_TABLE_HRA_CRAWL_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_crawl_statistics
+      - LOGGER_NAME={{PREFIX}}_etl_loader
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      - MONGODB_DATABASE_URI={{MONGODB_DATABASE_URI}}
+      - MONGODB_DATABASE_NAME={{MONGODB_DATABASE_NAME}}
+      - MONGODB_DATABASE_KEY_FILE=/app/certs/dpworker.pem
+      - MONGODB_DATABASE_ROOT_CA=/app/certs/root-ca.pem
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+
+  {{PREFIX}}-nlper:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-nlp:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SRC_DIR=/app/data/translate
+      - DST_DIR=/app/data/nlp
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_nlp
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_nlp_nlpers
+      - NLP_API=http://{{PREFIX}}-nlp-api:8081/nlp
+      - NLP_SECRET=hkqxWtW9gMIU8Wdi9AhkqxWtW9gMIU8Wdi9AhkqxWtW9gMIU8Wdi9A
+      - LOGGER_NAME={{PREFIX}}_etl_nlper
+      - TRANSFORM_BATCH_SIZE=2000
+      - PROGRESS_THRESHOLD=2000
+      - MC_LICENSE={{MEANING_CLOUD_LICENSE}}
+      - MC_API_URL=https://api.meaningcloud.com/
+      - MC_TIMEOUT=120
+      - WORKER_THREAD_ENABLE=1
+      - JOB_CLASSIFIER_API=http://{{PREFIX}}-prediction-service:8083/job-classifier
+      - JOB_CLASSIFIER_CONFIDENCE_THRESHOLD=0.2
+      - MONGODB_DATABASE_URI={{MONGODB_DATABASE_URI}}
+      - MONGODB_DATABASE_NAME={{MONGODB_DATABASE_NAME}}
+      - MONGODB_DATABASE_KEY_FILE=/app/certs/dpworker.pem
+      - MONGODB_DATABASE_ROOT_CA=/app/certs/root-ca.pem
+      - GCP_BQ_TABLE_VOC_NLP_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voc_nlp_statistics
+      - GCP_BQ_TABLE_VOE_NLP_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_nlp_statistics
+      - USE_TPP_NLP_SERVICE=0
+      - TPP_NLP_API_URL=http://172.16.11.24:3007/predict/dimensions
+      - TPP_NLP_SECRET=519e7521034c0a3a3b91e8422828be7f88d365500d46fdf58b2fa597f2f6ca85
+    volumes:
+      - /home/hien_hoang/worker/nlp:/app/data
+
+  {{PREFIX}}-cs-data-loader:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-cs-data-loader:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_load_cs_data
+      - GCP_PUBSUB_TOPIC_DATA_CONSUME_AFTER_TASK={{PREFIX}}_data_consume_aftertask
+      - GCP_PUBSUB_TOPIC_CS_INTERNAL_PROGRESS={{PREFIX}}_cs_internal_progress
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_cs_data_loader
+      - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+      - GCP_BQ_TABLE_VOC_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_review_stats
+      - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+      - GCP_BQ_TABLE_VOE_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_review_stats
+      - GCP_BQ_TABLE_VOE_JOB={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_job
+      - GCP_BQ_TABLE_VOE_COMPANY={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_company
+      - GCP_BQ_TABLE_CORESIGNAL_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_stats
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EXPERIENCES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_experiences
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EDUCATION={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_education
+      - GCP_BQ_TABLE_CORESIGNAL_COMPANY_DATASOURCE={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_company_datasource
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE_MONTHLY={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure_monthly
+      - LOGGER_NAME={{PREFIX}}_etl_cs_data_loader
+      - BATCH_SIZE=1000
+      - MONGODB_DATABASE_URI={{MONGODB_DATABASE_URI}}
+      - MONGODB_DATABASE_NAME={{MONGODB_DATABASE_NAME}}
+      - MONGODB_DATABASE_KEY_FILE=/app/certs/dpworker.pem
+      - MONGODB_DATABASE_ROOT_CA=/app/certs/root-ca.pem
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+  
+  {{PREFIX}}-exporter:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-exporter:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SRC_DIR=/app/data/nlp
+      - DST_DIR=/app/data/load
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_export
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_export_exporters
+      - LOGGER_NAME={{PREFIX}}_etl_exporter
+      - GCP_BQ_DATASET_ID_EXPORT={{PREFIX}}_export
+      - GCP_BQ_DATASET_ID_DATAMART={{PREFIX}}_datamart
+      - GCP_STORAGE_BUCKET={{GCP_BUCKET}}
+      - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+      - GCP_BQ_TABLE_VOC_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_review_stats
+      - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+      - GCP_BQ_TABLE_VOE_REVIEW_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_review_stats
+      - GCP_BQ_TABLE_BATCH_STATUS={{GCP_PROJECT}}.{{PREFIX}}_staging.batch_status
+      - GCP_BQ_TABLE_VOE_BATCH_STATUS={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_batch_status
+      - GCP_BQ_TABLE_CASESTUDY_COMPANY_SOURCE={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_company_source
+      - GCP_BQ_TABLE_VOE_CASESTUDY_COMPANY_SOURCE={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_casestudy_company_source
+      - GCP_BQ_TABLE_NLP_OUTPUT_CASE_STUDY={{GCP_PROJECT}}.{{PREFIX}}_dwh.nlp_output_case_study
+      - GCP_BQ_TABLE_VOE_NLP_OUTPUT_CASE_STUDY={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_nlp_output_case_study
+      - GCP_BQ_TABLE_SUMMARY_TABLE={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_VOE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.voe_summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_VOE_JOB_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.voe_job_summary_table
+      - GCP_BQ_TABLE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_dimension_config
+      - GCP_BQ_TABLE_VOE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_casestudy_dimension_config
+      - GCP_BQ_TABLE_LANGUAGE_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.language_trans
+      - GCP_BQ_TABLE_VOE_LANGUAGE_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_language_trans
+      - GCP_BQ_TABLE_POLARITY_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.polarity_trans
+      - GCP_BQ_TABLE_VOE_POLARITY_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_polarity_trans
+      - GCP_BQ_TABLE_CASESTUDY_BATCHID={{GCP_PROJECT}}.{{PREFIX}}_staging.casestudy_batchid
+      - GCP_BQ_TABLE_VOE_CASESTUDY_BATCHID={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_casestudy_batchid
+      - GCP_BQ_TABLE_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.case_study_run_id
+      - GCP_BQ_TABLE_VOE_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_case_study_run_id
+      - GCP_BQ_TABLE_DIMENSION_DEFAULT={{GCP_PROJECT}}.{{PREFIX}}_dwh.dimension_default
+      - GCP_BQ_TABLE_SUMMARY_TABLE_ORIGIN={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table_origin
+      - GCP_BQ_TABLE_DIMENSION_KEYWORD_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.dimension_keyword_list
+      - GCP_BQ_TABLE_VOE_DIMENSION_KEYWORD_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_dimension_keyword_list
+      - GCP_BQ_TABLE_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.company_aliases_list
+      - GCP_BQ_TABLE_VOE_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_company_aliases_list
+      - GCP_PUBSUB_TOPIC_CS_PROGRESS={{PREFIX}}_cs_progress
+      - GCP_BQ_TABLE_VOE_JOB={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_job
+      - GCP_BQ_TABLE_VOE_COMPANY={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_company
+      - GCP_BQ_TABLE_PARENT_REVIEW_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.parent_review_mapping
+      - GCP_BQ_TABLE_VOE_PARENT_REVIEW_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_parent_review_mapping
+      - GCP_BQ_TABLE_VOC_CUSTOM_DIMENSION={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_custom_dimension
+      - GCP_BQ_TABLE_VOE_CUSTOM_DIMENSION={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_custom_dimension
+      - GCP_BQ_TABLE_VOC_CASESTUDY_CUSTOM_DIMENSION_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_custom_dimension_statistics
+      - GCP_BQ_TABLE_VOE_CASESTUDY_CUSTOM_DIMENSION_STATISTICS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_casestudy_custom_dimension_statistics
+      - GCP_BQ_TABLE_REVIEW_COUNTRY_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.review_country_mapping
+      - GCP_BQ_TABLE_VOE_REVIEW_COUNTRY_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_review_country_mapping
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      # HRA case_study
+      ## staging
+      - GCP_BQ_TABLE_CORESIGNAL_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_stats
+      - GCP_BQ_TABLE_CORESIGNAL_COMPANY_DATASOURCE={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_company_datasource
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EXPERIENCES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_experiences
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EDUCATION={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_education
+      - GCP_BQ_TABLE_HRA_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.hra_case_study_run_id
+      ## DWH
+      - GCP_BQ_TABLE_HRA_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_casestudy_dimension_config
+      - GCP_BQ_TABLE_HRA_EXPERIENCE_FUNCTION={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_experience_function
+      - GCP_BQ_TABLE_HRA_EDUCATION_DEGREE={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_education_degree
+      - GCP_BQ_TABLE_HRA_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_company_aliases_list
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE_MONTHLY={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure_monthly
+      - GCP_BQ_TABLE_HRA_COMPANY_EMPLOYEES_BUCKET={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_company_employees_bucket
+      ## datamart/datamart_cs
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_COMPANY_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_company
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EMPLOYEES_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_employees
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EXPERIENCE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_experience
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EDUCATION_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_education
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EDUCATION_DEGREE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_education_degree
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_MONTHLY_DATASET_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_monthly_dataset
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_TURNOVER_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_turnover
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+  
+  {{PREFIX}}-keyword-extractor:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-keyword-extractor:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_keyword_extract
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_keyword_extract_worker
+      - LOGGER_NAME={{PREFIX}}_etl_keyword_extractor
+      - GCP_PUBSUB_TOPIC_CS_PROGRESS={{PREFIX}}_cs_progress
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      - GCP_BQ_DATASET_ID_EXPORT={{PREFIX}}_export
+      - GCP_BQ_DATASET_ID_DATAMART={{PREFIX}}_datamart
+      - GCP_BQ_TABLE_SUMMARY_TABLE={{GCP_PROJECT}}.{{PREFIX}}_datamart.summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.*
+      - GCP_BQ_TABLE_KEYWORD_EXTRACTION_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_datamart.keywords_output
+      - GCP_BQ_TABLE_WORD_FREQUENCY={{GCP_PROJECT}}.{{PREFIX}}_datamart.word_frequency
+      - GCP_BQ_TABLE_SUMMARY_TABLE_ORIGIN={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table_origin
+      - GCP_BQ_TABLE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_company_source
+      - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+      - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+      - GCP_BQ_TABLE_VOC_CUSTOM_DIMENSION={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_custom_dimension
+      - GCP_BQ_TABLE_VOE_CUSTOM_DIMENSION={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_custom_dimension
+      - GCP_BQ_TABLE_VOC_KEYWORDS_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_keywords_output
+      - GCP_BQ_TABLE_VOE_KEYWORDS_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_keywords_output
+      - ENCODE_SENTENCE_API=http://{{PREFIX}}-prediction-service:8083/encode-sentence
+      - WORKER_BATCH_SIZE=10000
+      - SPACY_MODEL=en_core_web_md
+      - SPACY_N_PROCESS=2
+      - SPACY_BATCH_SIZE=128
+      # HRA case_study
+      ## staging
+      - GCP_BQ_TABLE_CORESIGNAL_STATS={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_stats
+      - GCP_BQ_TABLE_CORESIGNAL_COMPANY_DATASOURCE={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_company_datasource
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EXPERIENCES={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_experiences
+      - GCP_BQ_TABLE_CORESIGNAL_EMPLOYEES_EDUCATION={{GCP_PROJECT}}.{{PREFIX}}_staging.coresignal_employees_education
+      - GCP_BQ_TABLE_HRA_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.hra_case_study_run_id
+      ## DWH
+      - GCP_BQ_TABLE_HRA_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_casestudy_dimension_config
+      - GCP_BQ_TABLE_HRA_EXPERIENCE_FUNCTION={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_experience_function
+      - GCP_BQ_TABLE_HRA_EDUCATION_DEGREE={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_education_degree
+      - GCP_BQ_TABLE_HRA_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_company_aliases_list
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure
+      - GCP_BQ_TABLE_HRA_EMPLOYEES_TENURE_MONTHLY={{GCP_PROJECT}}.{{PREFIX}}_dwh.hra_employees_tenure_monthly
+      ## datamart/datamart_cs
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_COMPANY_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_company
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EMPLOYEES_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_employees
+      - GCP_BQ_TABLE_HRA_SUMMARY_TABLE_EXPERIENCE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.hra_summary_table_experience
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+  
+  {{PREFIX}}-word-frequency-worker:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-word-frequency:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_word_frequency
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_word_frequency_worker
+      - LOGGER_NAME={{PREFIX}}_etl_word_frequency
+      - GCP_PUBSUB_TOPIC_CS_PROGRESS={{PREFIX}}_cs_progress
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      - GCP_BQ_DATASET_ID_EXPORT={{PREFIX}}_export
+      - GCP_BQ_DATASET_ID_DATAMART={{PREFIX}}_datamart
+      - GCP_BQ_TABLE_SUMMARY_TABLE={{GCP_PROJECT}}.{{PREFIX}}_datamart.summary_table
+      - GCP_BQ_TABLE_KEYWORD_EXTRACTION_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_datamart.keywords_output
+      - GCP_BQ_TABLE_VOC_KEYWORDS_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_staging.voc_keywords_output
+      - GCP_BQ_TABLE_VOE_KEYWORDS_OUTPUT={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_keywords_output
+      - GCP_BQ_TABLE_VOC_SUMMARY_TABLE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.summary_table_*
+      - GCP_BQ_TABLE_VOE_SUMMARY_TABLE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.voe_summary_table_*
+      - GCP_BQ_TABLE_WORD_FREQUENCY={{GCP_PROJECT}}.{{PREFIX}}_datamart.word_frequency
+      - GCP_BQ_LOAD_BATCH_SIZE=5000
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+  
+  memcached:
+    image: memcached
+    restart: always
+    command: memcached -m 128
+      
+  {{PREFIX}}-translate-api:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-api-translation:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MEMCACHED_SERVER=memcached
+      - PORT=8080
+      - LOGGER_NAME={{PREFIX}}_api_translation
+      - LUMINATI_HTTP_PROXY={{LUMINATI_HTTP_PROXY}}
+      - HTTP_PROXY={{LUMINATI_HTTP_PROXY}}
+
+  {{PREFIX}}-nlp_indexer:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-nlp_indexer:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_nlp_index
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_nlp_indexer
+      - LOGGER_NAME={{PREFIX}}_etl_nlp_indexer
+      - GCP_PUBSUB_TOPIC_CS_PROGRESS={{PREFIX}}_cs_progress
+      - TRANSFORM_BATCH_SIZE=1
+      - PROGRESS_THRESHOLD=10000
+      - GCP_BQ_DATASET_ID_EXPORT={{PREFIX}}_export
+      - GCP_BQ_DATASET_ID_DATAMART={{PREFIX}}_datamart
+      - GCP_STORAGE_BUCKET={{GCP_BUCKET}}
+      - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+      - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+      - GCP_BQ_TABLE_BATCH_STATUS={{GCP_PROJECT}}.{{PREFIX}}_staging.batch_status
+      - GCP_BQ_TABLE_VOE_BATCH_STATUS={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_batch_status
+      - GCP_BQ_TABLE_CASESTUDY_COMPANY_SOURCE={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_company_source
+      - GCP_BQ_TABLE_VOE_CASESTUDY_COMPANY_SOURCE={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_casestudy_company_source
+      - GCP_BQ_TABLE_NLP_OUTPUT_CASE_STUDY={{GCP_PROJECT}}.{{PREFIX}}_dwh.nlp_output_case_study
+      - GCP_BQ_TABLE_VOE_NLP_OUTPUT_CASE_STUDY={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_nlp_output_case_study
+      - GCP_BQ_TABLE_SUMMARY_TABLE={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_VOE_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.voe_summary_table
+      - GCP_BQ_TABLE_SUMMARY_TABLE_VOE_JOB_PREFIX={{GCP_PROJECT}}.{{PREFIX}}_datamart_cs.voe_job_summary_table
+      - GCP_BQ_TABLE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.casestudy_dimension_config
+      - GCP_BQ_TABLE_VOE_CASESTUDY_DIMENSION_CONFIG={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_casestudy_dimension_config
+      - GCP_BQ_TABLE_LANGUAGE_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.language_trans
+      - GCP_BQ_TABLE_VOE_LANGUAGE_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_language_trans
+      - GCP_BQ_TABLE_POLARITY_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.polarity_trans
+      - GCP_BQ_TABLE_VOE_POLARITY_TRANS={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_polarity_trans
+      - GCP_BQ_TABLE_CASESTUDY_BATCHID={{GCP_PROJECT}}.{{PREFIX}}_staging.casestudy_batchid
+      - GCP_BQ_TABLE_VOE_CASESTUDY_BATCHID={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_casestudy_batchid
+      - GCP_BQ_TABLE_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.case_study_run_id
+      - GCP_BQ_TABLE_VOE_CASESTUDY_RUN_ID={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_case_study_run_id
+      - GCP_BQ_TABLE_DIMENSION_DEFAULT={{GCP_PROJECT}}.{{PREFIX}}_dwh.dimension_default
+      - GCP_BQ_TABLE_SUMMARY_TABLE_ORIGIN={{GCP_PROJECT}}.{{PREFIX}}_dwh.summary_table_origin
+      - GCP_BQ_TABLE_DIMENSION_KEYWORD_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.dimension_keyword_list
+      - GCP_BQ_TABLE_VOE_DIMENSION_KEYWORD_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_dimension_keyword_list
+      - GCP_BQ_TABLE_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.company_aliases_list
+      - GCP_BQ_TABLE_VOE_COMPANY_ALIASES_LIST={{GCP_PROJECT}}.{{PREFIX}}_dwh.voe_company_aliases_list
+      - GCP_BQ_TABLE_VOE_JOB={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_job
+      - GCP_BQ_TABLE_VOE_COMPANY={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_company
+      - GCP_BQ_TABLE_PARENT_REVIEW_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.parent_review_mapping
+      - GCP_BQ_TABLE_VOE_PARENT_REVIEW_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_parent_review_mapping
+      - GCP_BQ_TABLE_REVIEW_COUNTRY_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.review_country_mapping
+      - GCP_BQ_TABLE_VOE_REVIEW_COUNTRY_MAPPING={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_review_country_mapping
+      - GCP_BQ_LOAD_BATCH_SIZE=5000
+      - CASE_STUDY_NLP_INDEX_PREFIX={{PREFIX}}_nlp_index_csid_
+      - ELASTICSEARCH_HOST={{ELASTICSEARCH_HOST}}
+      - NLP_INDEX_BATCH_SIZE=1000
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+
+  {{PREFIX}}-prediction-service:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-prediction-service:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MEMCACHED_SERVER=memcached
+      - PORT=8083
+      - LOGGER_NAME={{PREFIX}}_etl_prediction_service
+      - GCP_STORAGE_BUCKET={{GCP_BUCKET}}
+      - JOB_CLASSIFIER_MODEL_DIRECTORY=model_binaries/job_classifier
+      - JOB_CLASSIFIER_MODEL_FILE=default.onnx
+      - JOB_CLASSIFIER_LABEL_MAPPING=default.label
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data
+
+  {{PREFIX}}-error-handler-worker:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-error-handler:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_error_handler
+      - GCP_STORAGE_BUCKET={{GCP_BUCKET}}
+      - GCP_PUBSUB_TOPIC={{PREFIX}}_internal_etl_error
+      - GCP_PUBSUB_SUBSCRIPTION={{PREFIX}}_internal_etl_error_subscription
+      - GCP_BQ_TABLE_ETL_ERRORS={{GCP_PROJECT}}.{{PREFIX}}_staging.etl_errors
+    volumes:
+      - /home/hien_hoang/worker/load:/app/data

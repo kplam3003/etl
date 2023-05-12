@@ -1,0 +1,91 @@
+dev_build_webhook_crawler:
+  stage: build
+  only:
+    refs:
+      - develop
+    changes:
+      - webhook_crawler/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building webhook_crawler dev..."
+    - cd webhook_crawler
+    - cp -r ../core core
+    - docker build -t leo-webhook-crawler .
+    - rm -rf core
+    - docker tag leo-webhook-crawler ${CONTAINER_REGISTRY}/leo-etlplatform/leo-webhook-crawler:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-webhook-crawler:dev
+  tags:
+  - docker
+
+
+stag_build_webhook_crawler:
+  stage: build
+  only:
+    refs:
+      - develop
+    changes:
+      - webhook_crawler/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+    ENV: "stag"
+  script:
+    - echo "Building webhook_crawler stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd webhook_crawler
+    - cp -r ../core core
+    - docker build -t leo-webhook-crawler .
+    - rm -rf core
+    - docker tag leo-webhook-crawler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+  tags:
+  - docker
+
+prod_build_webhook_crawler:
+  stage: build
+  only:
+    refs:
+      - prod
+    changes:
+      - webhook_crawler/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+    ENV: "prod"
+  script:
+    - echo "Building webhook_crawler prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd webhook_crawler
+    - cp -r ../core core
+    - docker build -t leo-webhook-crawler .
+    - rm -rf core
+    - docker tag leo-webhook-crawler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+  tags:
+  - docker
+
+fresh_build_webhook_crawler:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - webhook_crawler/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+    ENV: "fresh"
+  script:
+    - echo "Building webhook_crawler fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd webhook_crawler
+    - cp -r ../core core
+    - docker build -t leo-webhook-crawler .
+    - rm -rf core
+    - docker tag leo-webhook-crawler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-webhook-crawler:${ENV}
+  tags:
+  - docker

@@ -1,0 +1,135 @@
+version: '3.1'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.7
+    restart: always
+
+  sqlproxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.16
+    restart: always
+    command: /cloud_sql_proxy -instances={{GCP_PROJECT}}:{{GCP_DB_INSTANCE}}=tcp:0.0.0.0:5432
+
+  {{PREFIX}}-worker:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MQ_HOST=rabbitmq
+      - LOGGER_NAME={{PREFIX}}_etl_master_worker
+    depends_on:
+      - sqlproxy
+      - rabbitmq
+    command: celery -A app worker -l info
+
+  {{PREFIX}}-sched:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    env_file:
+      - .env
+    environment:
+      - MQ_HOST=rabbitmq
+      - LOGGER_NAME={{PREFIX}}_etl_master_sched
+    depends_on:
+      - sqlproxy
+      - rabbitmq
+      - {{PREFIX}}-worker
+    restart: always
+    command: celery -A app beat -l info
+
+  {{PREFIX}}-run-vms:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_run_vms
+      - SLEEP=30
+    entrypoint: python app.py --app run_vm_task
+
+  {{PREFIX}}-scale-vms:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_scale_vms
+      - SLEEP=30
+    entrypoint: python app.py --app scale_vms
+
+  {{PREFIX}}-clean-vms:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_clean_vms
+      - SLEEP=30
+    entrypoint: python app.py --app clean_vm_task
+
+  {% for after_ix in range(N_AFTER_TASKS) %}
+  {{PREFIX}}-after-task-{{after_ix}}:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - SLEEP=5
+      - LOGGER_NAME={{PREFIX}}_etl_master_after_task
+    depends_on:
+      - sqlproxy
+    command: python subscribers.py --listener after_task
+  {% endfor %}
+  
+  {{PREFIX}}-progress:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_progress
+    depends_on:
+      - sqlproxy
+    command: python subscribers.py --listener progress
+
+  {{PREFIX}}-status-updater:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_status_updater
+      - SLEEP=300
+    depends_on:
+      - sqlproxy
+    command: python subscribers.py --listener status_updater
+
+  {{PREFIX}}-data-flower:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-master:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_master_data_flow
+      - SLEEP=30
+    depends_on:
+      - sqlproxy
+    command: python subscribers.py --listener data_flow
+
+  #{{PREFIX}}-dq-process-monitoring:
+  #  image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-dq-process-monitoring:{{ENV}}
+  #  restart: always
+  #  env_file:
+  #    - .env
+  #  environment:
+  #    - LOGGER_NAME={{PREFIX}}_dq_process_monitoring
+  #    - GCP_BQ_TABLE_LEAD_TIME={{GCP_PROJECT}}.{{PREFIX}}_data_quality.etl_lead_time_monitor
+  #    - GCP_BQ_MV_LEAD_TIME_DEDUP={{GCP_PROJECT}}.{{PREFIX}}_data_quality.etl_lead_time_monitor_dedup_mv
+  #    - GCP_BQ_TABLE_LEAD_TIME_DEDUP={{GCP_PROJECT}}.{{PREFIX}}_data_quality.etl_lead_time_monitor_dedup
+  #    - GCP_BQ_TABLE_BATCH_REVIEW={{GCP_PROJECT}}.{{PREFIX}}_data_quality.etl_batch_review_monitor
+  #    - GCP_BQ_TABLE_VOC={{GCP_PROJECT}}.{{PREFIX}}_staging.voc
+  #    - GCP_BQ_TABLE_VOE={{GCP_PROJECT}}.{{PREFIX}}_staging.voe
+  #    - GCP_BQ_TABLE_VOE_JOB={{GCP_PROJECT}}.{{PREFIX}}_staging.voe_job
+  #  depends_on:
+  #    - sqlproxy

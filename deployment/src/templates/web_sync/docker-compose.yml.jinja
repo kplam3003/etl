@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  sqlproxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.16
+    restart: always
+    command: /cloud_sql_proxy -instances={{GCP_PROJECT}}:{{GCP_DB_INSTANCE}}=tcp:0.0.0.0:5432
+  
+  {{PREFIX}}-web-sync:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-web-synchronizer:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - ENABLE_CLOUD_LOGGING=1
+      - LOGGER_NAME={{PREFIX}}_web_sync
+      - CONTAINER_REGISTRY={{CONTAINER_REGISTRY}}
+      - GCP_PROJECT_ID={{GCP_PROJECT}}
+      - GCP_DB_INSTANCE={{GCP_DB_INSTANCE}}
+      - GCP_PUBSUB_SUBSCRIPTION_REQUESTS_WEBPLATFORM={{PREFIX}}_requests_webplatform
+      - GCP_PUBSUB_TOPIC_CS_PROGRESS={{PREFIX}}_cs_progress
+      - GCP_PUBSUB_TOPIC_COMPANY_DATASOURCE_PROGRESS={{PREFIX}}_company_datasource_progress
+      - DATABASE_URI={{DATABASE_URI}}
+    depends_on:
+      - sqlproxy

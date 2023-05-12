@@ -1,0 +1,201 @@
+
+dev_build_case_study_data_loader:
+  stage: build
+  environment:
+    name: develop
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building scalable_case_study_data_loader dev..."
+    - cd scalable_case_study_data_loader
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-cs-data-loader .
+    - docker tag leo-etl-cs-data-loader ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-cs-data-loader:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-cs-data-loader:dev
+    - rm -rf core certs
+  tags:
+  - docker
+
+dev_deploy_case_study_data_loader:
+  stage: deploy
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  script:
+    - echo "Deploying scalable_case_study_data_loader dev..."
+    - cd /home/hienhoang/leonardo/worker/dev_worker/
+    - docker-compose pull
+    - docker-compose up -d
+  tags:
+  - ssh
+
+qc_build_case_study_data_loader:
+  stage: build
+  only:
+    refs:
+      - qc
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Building scalable_case_study_data_loader qc..."
+    - cat /credentials/qc-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_case_study_data_loader
+    - cp -r ../core core
+    - docker build -t leo-etl-cs-data-loader .
+    - rm -rf core
+    - docker tag leo-etl-cs-data-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:qc
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:qc
+  tags:
+  - docker
+
+qc_deploy_case_study_data_loader:
+  stage: deploy
+  only:
+    refs:
+      - qc
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Deploying scalable_case_study_data_loader dev..."
+    - gcloud auth activate-service-account --key-file /credentials/qc-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+stag_build_case_study_data_loader:
+  stage: build
+  environment:
+    name: staging
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building scalable_case_study_data_loader stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_case_study_data_loader
+    # core packages
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-cs-data-loader .
+    - docker tag leo-etl-cs-data-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:stag
+    # cleanup
+    - rm -rf core certs
+  tags:
+  - docker
+
+stag_deploy_case_study_data_loader:
+  stage: deploy
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Deploying scalable_case_study_data_loader stag..."
+    - gcloud auth activate-service-account --key-file /credentials/stg-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+
+prod_build_case_study_data_loader:
+  stage: build
+  environment:
+    name: production
+  only:
+    refs:
+      - prod
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building scalable_case_study_data_loader prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_case_study_data_loader
+    # core packages
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-cs-data-loader .
+    - docker tag leo-etl-cs-data-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:prod
+    - rm -rf core certs
+  tags:
+  - docker
+
+
+fresh_build_case_study_data_loader:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - core/*
+      - scalable_case_study_data_loader/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building scalable_case_study_data_loader fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_case_study_data_loader
+    # core packages
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-cs-data-loader .
+    - docker tag leo-etl-cs-data-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-cs-data-loader:fresh
+    - rm -rf core certs
+  tags:
+  - docker

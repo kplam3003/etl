@@ -1,0 +1,4 @@
+OPERATION_PAUSE = 'pause'
+OPERATION_STOP = 'stop'
+OPERATION_RESUME = 'resume'
+OPERATION_CLEAR_STOP = 'clear_stop'

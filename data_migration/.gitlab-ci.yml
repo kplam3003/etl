@@ -1,0 +1,256 @@
+
+dev_build_data_migration:
+  stage: build
+  environment:
+    name: develop
+  only:
+    refs:
+      - develop
+    changes:
+      - data_migration/*
+      - data_migration/**/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building data_migration dev..."
+    - cd data_migration
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-data-migration .
+    - docker tag leo-etl-data-migration ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-data-migration:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-data-migration:dev
+    - rm -rf core certs
+  tags:
+  - docker
+
+dev_deploy_data_migration:
+  stage: deploy
+  environment:
+    name: develop
+  only:
+    refs:
+      - develop
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  when: manual
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "/tmp/credentials.json"
+    GCP_DATAMART: "datamart"
+    GCP_DWH: "dwh"
+    GCP_STAGING: "staging"
+    GCP_EXPORT: "export"
+    GCP_DATA_QUALITY: "data_quality"
+    GCP_DATAMART_CS: "datamart_cs"
+    GCP_STORAGE_CORS_WEBURL: "https://web-dev-leo.tpptechnology.com"
+  image: "python:3.7"
+  script:
+    - cd data_migration
+    - export PYTHONPATH=`pwd`
+    - VERSION=v1.21.0 # see Releases for other versions
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > .env
+    - export $(grep -v '^#' .env | xargs)
+    - export BUCKET_NAME=${GCP_BUCKET}
+    - export ETL_DATABASE_URI=${DATABASE_URI}
+    - export GCP_PROJECT_ID=${GCP_PROJECT}
+    - pip install -r requirements.txt
+    - alembic upgrade head
+  tags:
+  - docker
+
+stag_build_data_migration:
+  stage: build
+  environment:
+    name: staging
+  only:
+    refs:
+      - stag
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building data_migration stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd data_migration
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-data-migration .
+    - docker tag leo-etl-data-migration ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:stag
+    - rm -rf core certs
+  tags:
+  - docker
+
+stag_deploy_data_migration:
+  stage: deploy
+  environment:
+    name: staging
+  only:
+    refs:
+      - stag
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  when: manual
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "/tmp/credentials.json"
+    GCP_DATAMART: "stag_datamart"
+    GCP_DWH: "stag_dwh"
+    GCP_STAGING: "stag_staging"
+    GCP_EXPORT: "stag_export"
+    GCP_DATA_QUALITY: "stag_data_quality"
+    GCP_DATAMART_CS: "stag_datamart_cs"
+    GCP_STORAGE_CORS_WEBURL: "https://web-stag-leo.tpptechnology.com"
+  image: "python:3.7"
+  script:
+    - cd data_migration
+    - export PYTHONPATH=`pwd`
+    - VERSION=v1.21.0 # see Releases for other versions
+    - wget "https://storage.googleapis.com/cloudsql-proxy/$VERSION/cloud_sql_proxy.linux.amd64" -O cloud_sql_proxy
+    - chmod +x cloud_sql_proxy
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > .env
+    - export $(grep -v '^#' .env | xargs)
+    - export BUCKET_NAME=${GCP_BUCKET}
+    - export GCP_PROJECT_ID=${GCP_PROJECT}
+    - pip install -r requirements.txt
+    - ./cloud_sql_proxy -instances=${GCP_PROJECT}:${GCP_DB_INSTANCE}=tcp:0.0.0.0:5432 &
+    - export ETL_DATABASE_URI=`echo $DATABASE_URI | sed "s/sqlproxy/localhost/"`
+    - sleep 10
+    - alembic upgrade head
+  tags:
+  - docker
+
+prod_build_data_migration:
+  stage: build
+  environment:
+    name: production
+  only:
+    refs:
+      - prod
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building data_migration prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd data_migration
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-data-migration .
+    - docker tag leo-etl-data-migration ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:prod
+    - rm -rf core certs
+  tags:
+  - docker
+
+prod_deploy_data_migration:
+  stage: deploy
+  environment:
+    name: production
+  only:
+    refs:
+      - prod
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  when: manual
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "/tmp/credentials.json"
+  image: "python:3.7"
+  script:
+    - cd data_migration
+    - export PYTHONPATH=`pwd`
+    - VERSION=v1.21.0 # see Releases for other versions
+    - wget "https://storage.googleapis.com/cloudsql-proxy/$VERSION/cloud_sql_proxy.linux.amd64" -O cloud_sql_proxy
+    - chmod +x cloud_sql_proxy
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > .env
+    - export $(grep -v '^#' .env | xargs)
+    - pip install -r requirements.txt
+    - ./cloud_sql_proxy -instances=${GCP_PROJECT}:${GCP_DB_INSTANCE}=tcp:0.0.0.0:5432 &
+    - export ETL_DATABASE_URI=`echo $DATABASE_URI | sed "s/sqlproxy/localhost/"`
+    - sleep 10
+    - alembic upgrade head
+  tags:
+  - docker
+
+fresh_build_data_migration:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building data_migration fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd data_migration
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-data-migration .
+    - docker tag leo-etl-data-migration ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-data-migration:fresh
+    - rm -rf core certs
+  tags:
+  - docker
+
+fresh_deploy_data_migration:
+  stage: deploy
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - data_migration/**
+      - data_migration/**/*
+  when: manual
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "/tmp/credentials.json"
+  image: "python:3.7"
+  script:
+    - cd data_migration
+    - export PYTHONPATH=`pwd`
+    - VERSION=v1.21.0 # see Releases for other versions
+    - wget "https://storage.googleapis.com/cloudsql-proxy/$VERSION/cloud_sql_proxy.linux.amd64" -O cloud_sql_proxy
+    - chmod +x cloud_sql_proxy
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > .env
+    - export $(grep -v '^#' .env | xargs)
+    - pip install -r requirements.txt
+    - ./cloud_sql_proxy -instances=${GCP_PROJECT}:${GCP_DB_INSTANCE}=tcp:0.0.0.0:5432 &
+    - export ETL_DATABASE_URI=`echo $DATABASE_URI | sed "s/sqlproxy/localhost/"`
+    - sleep 10
+    - alembic upgrade head
+  tags:
+  - docker

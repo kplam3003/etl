@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.7
+    restart: always
+
+  sqlproxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.16
+    restart: always
+    command: /cloud_sql_proxy -instances=${GCP_PROJECT}:us-west1:leonardo-postgresql-develop=tcp:0.0.0.0:5432
+  
+  worker:
+    image: gcr.io/tpp-leonardo-20200325/leo-etl-master
+    restart: always
+    environment: 
+      - MQ_HOST=rabbitmq
+      - DATABASE_URI=${DATABASE_URI}
+      - GCP_PROJECT=${GCP_PROJECT}
+      - GCP_ZONE=${GCP_ZONE}
+      - GCP_MACHINE_IMAGE=${GCP_MACHINE_IMAGE}
+      - MAX_VM=${MAX_VM}
+    depends_on: 
+      - rabbitmq
+    command: celery -A app worker -l info
+  
+  sched:
+    image: gcr.io/tpp-leonardo-20200325/leo-etl-master
+    environment: 
+      - MQ_HOST=rabbitmq
+      - DATABASE_URI=${DATABASE_URI}
+      - GCP_PROJECT=${GCP_PROJECT}
+      - GCP_ZONE=${GCP_ZONE}
+      - GCP_MACHINE_IMAGE=${GCP_MACHINE_IMAGE}
+      - MAX_VM=${MAX_VM}
+    depends_on: 
+      - rabbitmq
+      - worker
+    restart: always
+    command: celery -A app beat -l info

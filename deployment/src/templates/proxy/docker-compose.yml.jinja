@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+
+  luminati-proxy:
+    image: luminati/luminati-proxy
+    restart: always
+    command: luminati
+    ports:
+      - 24000:24000
+      - 22999:22999
+      - 22225:22225

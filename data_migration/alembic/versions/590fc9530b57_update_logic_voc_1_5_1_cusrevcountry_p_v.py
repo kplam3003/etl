@@ -1,0 +1,208 @@
+"""update_logic_voc_1_5_1_cusrevcountry_p_v
+
+Revision ID: 590fc9530b57
+Revises: c9cbeadba47c
+Create Date: 2021-10-26 15:32:05.368661
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+from google.cloud import bigquery
+from google.oauth2 import service_account
+from google.cloud import storage
+import gcsfs
+import pandas as pd
+import ast
+import time
+import config
+
+# revision identifiers, used by Alembic.
+revision = '590fc9530b57'
+down_revision = 'c9cbeadba47c'
+branch_labels = None
+depends_on = None
+
+bqclient = bigquery.Client(project=config.GCP_PROJECT_ID)
+fs = gcsfs.GCSFileSystem()
+
+# Get GCS bucket
+bucket_name = config.BUCKET_NAME
+
+# Get Bigquery Database name:
+project = config.GCP_PROJECT_ID
+database_list = [config.STAGING, config.DWH, config.DATAMART, config.EXPORT]
+staging = config.STAGING
+dwh = config.DWH
+datamart = config.DATAMART
+
+def upgrade():
+    
+    query_job =bqclient.query(query_string1)
+    query_job .result()
+    print("\n update logic view VOC_1_5_1_cusrevcountry_p_v successfull!")
+    
+def downgrade():
+    query_job =bqclient.query(query_string2)
+    query_job .result()
+    print("\n Downgrade VOC_1_5_1_cusrevcountry_p_v process is successfull!")
+
+query_string1 = f"""
+CREATE OR REPLACE VIEW `{project}.{datamart}.VOC_1_5_1_cusrevcountry_p_v` AS
+WITH BATCH_LIST as (
+    SELECT
+        batch_id
+    FROM
+        `{project}.{staging}.batch_status`
+    WHERE
+        status = 'Active'
+),
+parent_review as (
+    SELECT
+        DISTINCT case_study_id,
+        review_id,
+        parent_review_id,
+        technical_type
+    FROM
+        `{project}.{staging}.parent_review_mapping`
+    WHERE
+        batch_id IN (
+            SELECT
+                batch_id
+            FROM
+                BATCH_LIST
+        )
+),
+country_code as (
+    select
+        distinct case_study_id,
+        review_id,
+        case
+            WHEN review_country is null
+            or review_country = 'Unknown'
+            THEN 'blank'
+            else review_country
+        end as country_name,
+        case
+            when country_code is null
+            or country_code = 'Unknown' then 'blank'
+            else country_code
+        end as country_code
+    from
+        `{project}.{staging}.review_country_mapping`
+)
+SELECT
+    a.case_study_id,
+    case_study_name,
+    max(dimension_config_name) dimension_config_name,
+    dimension_config_id,
+    nlp_type,
+    nlp_pack,
+    max(company_name) company_name,
+    company_id,
+    review_date as daily_date,
+    ct.country_name,
+    ct.country_code,
+    count(distinct parent_review_id) as records,
+    count(distinct parent_review_id) as collected_review_count
+FROM
+    `{project}.{datamart}.summary_table` a
+    LEFT JOIN parent_review p ON a.case_study_id = p.case_study_id
+    AND a.review_id = p.review_id
+    LEFT JOIN country_code ct ON a.case_study_id = ct.case_study_id
+    AND a.review_id = ct.review_id
+WHERE
+    dimension_config_name is not null
+GROUP BY
+    case_study_id,
+    case_study_name,
+    dimension_config_id,
+    nlp_type,
+    nlp_pack,
+    company_id,
+    daily_date,
+    country_name,
+    country_code;
+"""
+
+query_string2 = f"""
+CREATE OR REPLACE VIEW `{project}.{datamart}.VOC_1_5_1_cusrevcountry_p_v` AS
+WITH BATCH_LIST as (
+    SELECT
+        batch_id
+    FROM
+        `{project}.{staging}.batch_status`
+    WHERE
+        status = 'Active'
+),
+parent_review as (
+    SELECT
+        DISTINCT case_study_id,
+        review_id,
+        parent_review_id,
+        technical_type
+    FROM
+        `{project}.{staging}.parent_review_mapping`
+    WHERE
+        batch_id IN (
+            SELECT
+                batch_id
+            FROM
+                BATCH_LIST
+        )
+),
+country_code as (
+    select
+        distinct case_study_id,
+        review_id,
+        case
+            WHEN review_country is null or review_country = 'Unknown'
+            THEN 'blank'
+            else review_country
+        end as country_name,
+        case
+            when country_code is null or country_code = 'Unknown'
+            then 'blank'
+            else country_code
+        end as country_code
+    FROM
+        `{project}.{staging}.review_country_mapping`
+    WHERE
+        batch_id in (
+            SELECT
+                batch_id
+            FROM
+                BATCH_LIST
+        )
+)
+SELECT
+    a.case_study_id,
+    case_study_name,
+    max(dimension_config_name) dimension_config_name,
+    dimension_config_id,
+    nlp_type,
+    nlp_pack,
+    max(company_name) company_name,
+    company_id,
+    review_date as daily_date,
+    max(ct.country_name) country_name,
+    max(ct.country_code) country_code,
+    count(distinct parent_review_id) as records,
+    count(distinct parent_review_id) as collected_review_count
+FROM
+    `{project}.{datamart}.summary_table` a
+    LEFT JOIN parent_review p ON a.case_study_id = p.case_study_id
+    AND a.review_id = p.review_id
+    LEFT JOIN country_code ct ON a.case_study_id = ct.case_study_id
+    AND a.review_id = ct.review_id
+WHERE
+    dimension_config_name is not null
+GROUP BY
+    case_study_id,
+    case_study_name,
+    dimension_config_id,
+    nlp_type,
+    nlp_pack,
+    company_id,
+    daily_date
+"""

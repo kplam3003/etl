@@ -1,0 +1,406 @@
+dimension_config_id,nlp_pack,nlp_type,dimension_config_name,nlp_dimension,modified_dimension,nlp_label,modified_label
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Telephone,Telephone
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Internet,Internet
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,App,App
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Chat,Chat
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Social network,Social network
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,IVR,IVR
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Office,Office
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Store,Store
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Establishment,Establishment
+1,VoC Generic,VoC,VoC Generic Default,Channel,Channel,Free Telephone,Free Telephone
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Free telephone,Free telephone
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Chat,Chat
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Office,Office
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Cash machine,Cash machine
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Establishment,Establishment
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,App,App
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Telephone,Telephone
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,IVR,IVR
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Internet,Internet
+2,VoC Banking,VoC,VoC Banking Default,Channel,Channel,Social network,Social network
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Chat,Chat
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Free telephone,Free telephone
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,IVR,IVR
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Telephone,Telephone
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Internet,Internet
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Office,Office
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Social network,Social network
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,Establishment,Establishment
+3,VoC Insurance,VoC,VoC Insurance Default,Channel,Channel,App,App
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Office,Office
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Telephone,Telephone
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Social network,Social network
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Free telephone,Free telephone
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Internet,Internet
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Store,Store
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Establishment,Establishment
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,Chat,Chat
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,IVR,IVR
+4,VoC Retail,VoC,VoC Retail Default,Channel,Channel,App,App
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Internet,Internet
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Establishment,Establishment
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Free telephone,Free telephone
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,IVR,IVR
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Telephone,Telephone
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,App,App
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Store,Store
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Chat,Chat
+5,VoC Telco,VoC,VoC Telco Default,Channel,Channel,Social network,Social network
+1,VoC Generic,VoC,VoC Generic Default,Company,Company,{CompanyName},{CompanyName}
+2,VoC Banking,VoC,VoC Banking Default,Company,Company,{CompanyName},{CompanyName}
+2,VoC Banking,VoC,VoC Banking Default,Company,Company,Generic bank,Generic bank
+3,VoC Insurance,VoC,VoC Insurance Default,Company,Company,Generic insurance company,Generic insurance company
+3,VoC Insurance,VoC,VoC Insurance Default,Company,Company,{CompanyName},{CompanyName}
+4,VoC Retail,VoC,VoC Retail Default,Company,Company,{CompanyName},{CompanyName}
+5,VoC Telco,VoC,VoC Telco Default,Company,Company,{CompanyName},{CompanyName}
+5,VoC Telco,VoC,VoC Telco Default,Company,Company,Generic provider,Generic provider
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Loan,Loan
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Life insurance,Life insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Mortgage loan,Mortgage loan
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Credit/Debit card,Credit/Debit card
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Insurance,Insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Broker,Broker
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Landlord insurance,Landlord insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Account,Account
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Investment fund,Investment fund
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Home insurance,Home insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,POS,POS
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Burial insurance,Burial insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Personal loan,Personal loan
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Market-linked deposit,Market-linked deposit
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Sight deposit,Sight deposit
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Other products,Other products
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Vehicle insurance,Vehicle insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Pension plan,Pension plan
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,In kind deposit,In kind deposit
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Health insurance,Health insurance
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Bill,Bill
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Deposit account,Deposit account
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Time deposit,Time deposit
+2,VoC Banking,VoC,VoC Banking Default,Product,Product,Personal finance insurance,Personal finance insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Life insurance,Life insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Vehicle insurance,Vehicle insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Personal finance insurance,Personal finance insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Long-term care insurance,Long-term care insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Condominium insurance,Condominium insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Travel insurance,Travel insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Burial insurance,Burial insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Generic insurance,Generic insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Home insurance,Home insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Third-party vehicle insurance,Third-party vehicle insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Health insurance,Health insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Dental insurance,Dental insurance
+3,VoC Insurance,VoC,VoC Insurance Default,Product,Product,Fully comprehensive vehicle insurance,Fully comprehensive vehicle insurance
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Beauty and personal care products,Beauty and personal care products
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Other products,Other products
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Cars,Cars
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Product status,Product status
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Household products,Household products
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Electronic product,Electronic product
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Textil product or accessories,Textil product or accessories
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Toys,Toys
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Sport products,Sport products
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Food and beverage,Food and beverage
+4,VoC Retail,VoC,VoC Retail Default,Product,Product,Cultural product,Cultural product
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Features of the establishment,Features of the establishment
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Noise,Noise
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Suggestion,Suggestion
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Temperature,Temperature
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Functionality,Functionality
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Number of employees,Number of employees
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Loyalty,Loyalty
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Number of establishments,Number of establishments
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Effectiveness,Effectiveness
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Availability of products,Availability of products
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Clarity and simplicity,Clarity and simplicity
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Speed and agility,Speed and agility
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Meeting deadlines,Meeting deadlines
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Reliability,Reliability
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Availability,Availability
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Flexibility,Flexibility
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Incident,Incident
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Luminosity,Luminosity
+1,VoC Generic,VoC,VoC Generic Default,Quality,Quality,Conditions of the establishment,Conditions of the establishment
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Flexibility,Flexibility
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Functionality,Functionality
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Suggestion,Suggestion
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Incident,Incident
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Number of establishments,Number of establishments
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Noise,Noise
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Features of the establishment,Features of the establishment
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Availability of products,Availability of products
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Meeting deadlines,Meeting deadlines
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Luminosity,Luminosity
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Effectiveness,Effectiveness
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Number of cash machines,Number of cash machines
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Clarity and simplicity,Clarity and simplicity
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Conditions of the establishment,Conditions of the establishment
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Loyalty,Loyalty
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Temperature,Temperature
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Speed and agility,Speed and agility
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Number of offices,Number of offices
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Availability,Availability
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Reliability,Reliability
+2,VoC Banking,VoC,VoC Banking Default,Quality,Quality,Number of employees,Number of employees
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Availability,Availability
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Meeting deadlines,Meeting deadlines
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Number of employees,Number of employees
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Incident,Incident
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Number of offices,Number of offices
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Functionality,Functionality
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Flexibility,Flexibility
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Number of establishments,Number of establishments
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Availability of products,Availability of products
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Speed and agility,Speed and agility
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Effectiveness,Effectiveness
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Suggestion,Suggestion
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Clarity and simplicity,Clarity and simplicity
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Reliability,Reliability
+3,VoC Insurance,VoC,VoC Insurance Default,Quality,Quality,Loyalty,Loyalty
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Luminosity,Luminosity
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Size availability,Size availability
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Number of employees,Number of employees
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Reliability,Reliability
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Incident,Incident
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Features of the establishment,Features of the establishment
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Temperature,Temperature
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Meeting deadlines,Meeting deadlines
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Conditions of the establishment,Conditions of the establishment
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Effectiveness,Effectiveness
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Number of establishments,Number of establishments
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Availability,Availability
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Clarity and simplicity,Clarity and simplicity
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Suggestion,Suggestion
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Availability of products,Availability of products
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Noise,Noise
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Speed and agility,Speed and agility
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Functionality,Functionality
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Flexibility,Flexibility
+4,VoC Retail,VoC,VoC Retail Default,Quality,Quality,Loyalty,Loyalty
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Temperature,Temperature
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Flexibility,Flexibility
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Loyalty,Loyalty
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Suggestion,Suggestion
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Speed and agility,Speed and agility
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Functionality,Functionality
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Effectiveness,Effectiveness
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Conditions of the establishment,Conditions of the establishment
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Luminosity,Luminosity
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Number of employees,Number of employees
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Reliability,Reliability
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Availability,Availability
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Incident,Incident
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Noise,Noise
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Meeting deadlines,Meeting deadlines
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Features of the establishment,Features of the establishment
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Clarity and simplicity,Clarity and simplicity
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Availability of products,Availability of products
+5,VoC Telco,VoC,VoC Telco Default,Quality,Quality,Number of establishments,Number of establishments
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Data,Data
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Music,Music
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Home phone,Home phone
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Internet,Internet
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Bundle,Bundle
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Mobile insurance,Mobile insurance
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Telephone service,Telephone service
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Connectivity,Connectivity
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Fiber,Fiber
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Wireless mobile services,Wireless mobile services
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,Television,Television
+5,VoC Telco,VoC,VoC Telco Default,Service,Service,ADSL,ADSL
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Shipping,Shipping
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Payment,Payment
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Discount,Discount
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Paperwork,Paperwork
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Returns and refunds,Returns and refunds
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Generic condition,Generic condition
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Purchase channel,Purchase channel
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Target customer,Target customer
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Promotion,Promotion
+1,VoC Generic,VoC,VoC Generic Default,Condition,Condition,Price,Price
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Promotion,Promotion
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Cancellation,Cancellation
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Maximum amount,Maximum amount
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Renewal,Renewal
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Minimum amount,Minimum amount
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Paperwork,Paperwork
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Subsequent deposits,Subsequent deposits
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Contracting,Contracting
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Total availability,Total availability
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Purchase channel,Purchase channel
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Fees,Fees
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Linked products,Linked products
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Availability,Availability
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Price,Price
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Target customers,Target customers
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Profitability,Profitability
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Generic condition,Generic condition
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Settlement,Settlement
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Maintenance,Maintenance
+2,VoC Banking,VoC,VoC Banking Default,Condition,Condition,Partial availability,Partial availability
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Promotions and discounts,Promotions and discounts
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Purchase channel,Purchase channel
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Target customer,Target customer
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Coverage,Coverage
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Copayment,Copayment
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Payment,Payment
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Price,Price
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Rate,Rate
+3,VoC Insurance,VoC,VoC Insurance Default,Condition,Condition,Generic condition,Generic condition
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Promotion,Promotion
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Shipping,Shipping
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Payment,Payment
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Price,Price
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Purchase channel,Purchase channel
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Generic condition,Generic condition
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Discount,Discount
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Returns and refunds,Returns and refunds
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Paperwork,Paperwork
+4,VoC Retail,VoC,VoC Retail Default,Condition,Condition,Target customer,Target customer
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Roaming,Roaming
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Purchase channel,Purchase channel
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Tablet,Tablet
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Payment,Payment
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Cancelation,Cancelation
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Target customer,Target customer
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Existing bindings,Existing bindings
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Service commitment,Service commitment
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Shipping,Shipping
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Price,Price
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Generic condition,Generic condition
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Billing,Billing
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Paperwork,Paperwork
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Discount,Discount
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Coverage,Coverage
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Plan,Plan
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Speed,Speed
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Contracting,Contracting
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Returns and refunds,Returns and refunds
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Smartphone,Smartphone
+5,VoC Telco,VoC,VoC Telco Default,Condition,Condition,Promotion,Promotion
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Transfer,Transfer
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Personal data,Personal data
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Documentation,Documentation
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Deposit,Deposit
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Activation,Activation
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Refund,Refund
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Withdrawal,Withdrawal
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Cancelation,Cancelation
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Currency exchange,Currency exchange
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Inquiry,Inquiry
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Purchase,Purchase
+2,VoC Banking,VoC,VoC Banking Default,Operation,Operation,Participants,Participants
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Accident,Accident
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Medical assistance,Medical assistance
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Documentation,Documentation
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Personal data,Personal data
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Explosion,Explosion
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Expiration,Expiration
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Procedure,Procedure
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Compensation,Compensation
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Fines management,Fines management
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Insurance claim,Insurance claim
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Electrocution,Electrocution
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Transfer,Transfer
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Cancelation,Cancelation
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Theft,Theft
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Garage,Garage
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Flood,Flood
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Tow truck,Tow truck
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Legal defense,Legal defense
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Renewal,Renewal
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Breakdown,Breakdown
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Authorization,Authorization
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Replacement vehicle,Replacement vehicle
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Fire,Fire
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Claims adjuster,Claims adjuster
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Agreed statement,Agreed statement
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Collapse,Collapse
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Assistance,Assistance
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Report,Report
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Roadside assistance,Roadside assistance
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Civil liability,Civil liability
+3,VoC Insurance,VoC,VoC Insurance Default,Operation,Operation,Contracting,Contracting
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Cancelation,Cancelation
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Contracting,Contracting
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Mobile upgrade,Mobile upgrade
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Number portability,Number portability
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Replacement SIM,Replacement SIM
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,IMEI registration,IMEI registration
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Recharge,Recharge
+5,VoC Telco,VoC,VoC Telco Default,Operation,Operation,Installation,Installation
+4,VoC Retail,VoC,VoC Retail Default,Shipping ,Shipping ,Packaging,Packaging
+4,VoC Retail,VoC,VoC Retail Default,Shipping ,Shipping ,Online booking,Online booking
+4,VoC Retail,VoC,VoC Retail Default,Shipping ,Shipping ,Substitute product,Substitute product
+4,VoC Retail,VoC,VoC Retail Default,Shipping ,Shipping ,Click and collect,Click and collect
+1,VoC Generic,VoC,VoC Generic Default,Satisfaction,Satisfaction,Negative,Negative
+1,VoC Generic,VoC,VoC Generic Default,Satisfaction,Satisfaction,Positive,Positive
+1,VoC Generic,VoC,VoC Generic Default,Satisfaction,Satisfaction,Neutral,Neutral
+2,VoC Banking,VoC,VoC Banking Default,Satisfaction,Satisfaction,Negative,Negative
+2,VoC Banking,VoC,VoC Banking Default,Satisfaction,Satisfaction,Neutral,Neutral
+2,VoC Banking,VoC,VoC Banking Default,Satisfaction,Satisfaction,Positive,Positive
+3,VoC Insurance,VoC,VoC Insurance Default,Satisfaction,Satisfaction,Positive,Positive
+3,VoC Insurance,VoC,VoC Insurance Default,Satisfaction,Satisfaction,Neutral,Neutral
+3,VoC Insurance,VoC,VoC Insurance Default,Satisfaction,Satisfaction,Negative,Negative
+4,VoC Retail,VoC,VoC Retail Default,Satisfaction,Satisfaction,Negative,Negative
+4,VoC Retail,VoC,VoC Retail Default,Satisfaction,Satisfaction,Neutral,Neutral
+4,VoC Retail,VoC,VoC Retail Default,Satisfaction,Satisfaction,Positive,Positive
+5,VoC Telco,VoC,VoC Telco Default,Satisfaction,Satisfaction,Neutral,Neutral
+5,VoC Telco,VoC,VoC Telco Default,Satisfaction,Satisfaction,Negative,Negative
+5,VoC Telco,VoC,VoC Telco Default,Satisfaction,Satisfaction,Positive,Positive
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Support and maintenance,Support and maintenance
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Incident management,Incident management
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Service,Service
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Advertising,Advertising
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Information,Information
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Accessibility and communication,Accessibility and communication
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Advice,Advice
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Training and knowledge,Training and knowledge
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Commitment,Commitment
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Commercial pressure,Commercial pressure
+1,VoC Generic,VoC,VoC Generic Default,CustomerService,CustomerService,Customer treatment,Customer treatment
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Training and knowledge,Training and knowledge
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Information,Information
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Service,Service
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Support and maintenance,Support and maintenance
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Accessibility and communication,Accessibility and communication
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Customer treatment,Customer treatment
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Commercial pressure,Commercial pressure
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Advertising,Advertising
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Incident management,Incident management
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Advice,Advice
+2,VoC Banking,VoC,VoC Banking Default,CustomerService,CustomerService,Commitment,Commitment
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Advertising,Advertising
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Accessibility and communication,Accessibility and communication
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Training and knowledge,Training and knowledge
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Customer treatment,Customer treatment
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Service,Service
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Incident management,Incident management
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Information,Information
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Commitment,Commitment
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Commercial pressure,Commercial pressure
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Support and maintenance,Support and maintenance
+3,VoC Insurance,VoC,VoC Insurance Default,CustomerService,CustomerService,Advice,Advice
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Commitment,Commitment
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Advertising,Advertising
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Training and knowledge,Training and knowledge
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Support and maintenance,Support and maintenance
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Advice,Advice
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Customer treatment,Customer treatment
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Incident management,Incident management
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Information,Information
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Commercial pressure,Commercial pressure
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Service,Service
+4,VoC Retail,VoC,VoC Retail Default,CustomerService,CustomerService,Accessibility and communication,Accessibility and communication
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Training and knowledge,Training and knowledge
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Information,Information
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Customer treatment,Customer treatment
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Advertising,Advertising
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Commitment,Commitment
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Support and maintenance,Support and maintenance
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Service,Service
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Accessibility and communication,Accessibility and communication
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Advice,Advice
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Incident management,Incident management
+5,VoC Telco,VoC,VoC Telco Default,CustomerService,CustomerService,Commercial pressure,Commercial pressure

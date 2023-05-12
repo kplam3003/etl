@@ -1,0 +1,12 @@
+Flask==2.1.0
+Flask-Caching
+pylibmc==1.6.1
+google==2.0.3
+google-api-core==1.23.0
+google-auth==1.23.0
+google-auth-httplib2==0.0.4
+google-auth-oauthlib==0.4.2
+google-cloud-core==1.4.4
+google-cloud-language==1.2.0
+google-cloud-logging==2.0.1
+googletrans==3.1.0a0

@@ -1,0 +1,198 @@
+
+dev_build_load_worker:
+  stage: build
+  environment:
+    name: develop
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building scalable_load_worker dev..."
+    - cd scalable_load_worker
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-loader .
+    - docker tag leo-etl-loader ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-loader:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-loader:dev
+    - rm -rf core certs
+  tags:
+  - docker
+
+dev_deploy_load_worker:
+  stage: deploy
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  script:
+    - echo "Deploying scalable_load_worker dev..."
+    - cd /home/hienhoang/leonardo/worker/dev_worker/
+    - docker-compose pull
+    - docker-compose up -d
+  tags:
+  - ssh
+
+
+qc_build_load_worker:
+  stage: build
+  only:
+    refs:
+      - qc
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Building scalable_load_worker qc..."
+    - cat /credentials/qc-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_load_worker
+    - cp -r ../core core
+    - docker build -t leo-etl-loader .
+    - rm -rf core
+    - docker tag leo-etl-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:qc
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:qc
+  tags:
+  - docker
+
+qc_deploy_load_worker:
+  stage: deploy
+  only:
+    refs:
+      - qc
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Deploying scalable_load_worker qc..."
+    - gcloud auth activate-service-account --key-file /credentials/qc-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+stag_build_load_worker:
+  stage: build
+  environment:
+    name: staging
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building scalable_load_worker stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_load_worker
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-loader .
+    - docker tag leo-etl-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:stag
+    - rm -rf core certs
+  tags:
+  - docker
+
+stag_deploy_load_worker:
+  stage: deploy
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Deploying scalable_load_worker stag..."
+    - gcloud auth activate-service-account --key-file /credentials/stg-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+
+prod_build_load_worker:
+  stage: build
+  environment:
+    name: production
+  only:
+    refs:
+      - prod
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building scalable_load_worker prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_load_worker
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-loader .
+    - docker tag leo-etl-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:prod
+    - rm -rf core certs
+  tags:
+  - docker
+
+
+fresh_build_load_worker:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - core/*
+      - scalable_load_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building scalable_load_worker fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd scalable_load_worker
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-etl-loader .
+    - docker tag leo-etl-loader ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-loader:fresh
+    - rm -rf core certs
+  tags:
+  - docker

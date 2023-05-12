@@ -1,0 +1,140 @@
+
+stag_generate_deployment:
+  stage: build
+  only:
+    refs:
+      - stag
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: staging
+  image: python:3.7
+  script:
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > stag.env
+    - ls -la
+    - pip install Jinja2
+    - ./generate.sh stag
+  artifacts:
+    paths:
+      - deployment/.build/
+  tags:
+  - docker
+
+stag_deploy_deployment:
+  stage: deploy
+  only:
+    refs:
+      - stag
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: staging
+  when: manual
+  script:
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - gcloud auth activate-service-account --key-file /tmp/credentials.json
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > stag.env
+    - ls -la
+    - ./sync.sh stag
+  dependencies:
+    - stag_generate_deployment
+  tags:
+  - gcloud
+
+
+prod_generate_deployment:
+  stage: build
+  only:
+    refs:
+      - prod
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: production
+  image: python:3.7
+  script:
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > prod.env
+    - ls -la
+    - pip install Jinja2
+    - ./generate.sh prod
+  artifacts:
+    paths:
+      - deployment/.build/
+  tags:
+  - docker
+
+prod_deploy_deployment:
+  stage: deploy
+  only:
+    refs:
+      - prod
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: production
+  when: manual
+  script:
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - gcloud auth activate-service-account --key-file /tmp/credentials.json
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > prod.env
+    - ls -la
+    - ./sync.sh prod
+  dependencies:
+    - prod_generate_deployment
+  tags:
+  - gcloud
+
+
+fresh_generate_deployment:
+  stage: build
+  only:
+    refs:
+      - fresh
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: fresh
+  image: python:3.7
+  script:
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > fresh.env
+    - ls -la
+    - pip install Jinja2
+    - ./generate.sh fresh
+  artifacts:
+    paths:
+      - deployment/.build/
+  tags:
+  - docker
+
+fresh_deploy_deployment:
+  stage: deploy
+  only:
+    refs:
+      - fresh
+    changes:
+      - deployment/**
+      - deployment/**/*
+  environment:
+    name: fresh
+  when: manual
+  script:
+    - echo ${GCP_CREDENTIALS} | base64 -d > /tmp/credentials.json
+    - gcloud auth activate-service-account --key-file /tmp/credentials.json
+    - cd deployment
+    - echo ${DEPLOYMENT_VARIABLES} | base64 -d > fresh.env
+    - ls -la
+    - ./sync.sh fresh
+  dependencies:
+    - fresh_generate_deployment
+  tags:
+  - gcloud

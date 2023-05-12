@@ -1,0 +1,67 @@
+stages:
+  - build
+  - deploy
+
+include:
+  - project: tpp-leonardo/leo-etl
+    file: dispatcher/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: company_datasource_orchestrator/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: case_study_orchestrator/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_preprocess_worker/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: scalable_translation_worker/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_nlp_worker/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_load_worker/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: web_synchronizer_v3/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_export_worker/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: translation_service/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: data_migration/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: scalable_crawler/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: scalable_word_frequency_worker/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: scalable_keyword_extraction_worker/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: dq_process_monitoring/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: webhook_crawler/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: scalable_nlp_indexer/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_prediction_service/.gitlab-ci.yml
+  
+  - project: tpp-leonardo/leo-etl
+    file: deployment/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: scalable_case_study_data_loader/.gitlab-ci.yml
+
+  - project: tpp-leonardo/leo-etl
+    file: error_handler_worker/.gitlab-ci.yml

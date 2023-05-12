@@ -1,0 +1,113 @@
+version: '3.1'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.7
+    restart: always
+
+  data-migration:
+    build: ../data_migration
+    environment:
+      - ETL_DATABASE_URI=${DATABASE_URI}
+
+  dev-worker:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MQ_HOST=rabbitmq
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_worker
+    command: celery -A app worker -l info
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+
+  dev-sched:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - MQ_HOST=rabbitmq
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_sched
+    restart: always
+    command: celery -A app beat -l info
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+
+  dev-run-vms:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_run_vms
+      - SLEEP=30
+    entrypoint: python app.py --app run_vm_task
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+  
+  dev-scale-vms:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_scale_vms
+      - SLEEP=30
+    entrypoint: python app.py --app scale_vms
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+  
+  dev-clean-vms:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_clean_vms
+      - SLEEP=30
+    entrypoint: python app.py --app clean_vm_task
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+
+  dev-after-task:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_after_task
+    command: python subscribers.py --listener after_task
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+
+  dev-progress:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_progress
+    command: python subscribers.py --listener progress
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json
+
+  dev-status-updater:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/gcp.json
+      - LOGGER_NAME=test_etl_master_status_updater
+    command: python subscribers.py --listener status_updater
+    volumes:
+      - /Users/hienhoang/.ssh/leo-etl-orchestrator.json:/credentials/gcp.json

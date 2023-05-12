@@ -1,0 +1,6 @@
+.*
+!.gitlab-ci.yml
+!.gitignore
+.env
+.*.env
+log/

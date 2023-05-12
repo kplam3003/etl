@@ -1,0 +1,129 @@
+
+dev_build_error_handler_worker:
+  stage: build
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - error_handler_worker/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building error_handler_worker dev..."
+    - cd error_handler_worker
+    - cp -r ../core core
+    - docker build -t leo-etl-error-handler .
+    - rm -rf core
+    - docker tag leo-etl-error-handler ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-error-handler:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-etl-error-handler:dev
+  tags:
+  - docker
+
+dev_deploy_error_handler_worker:
+  stage: deploy
+  only:
+    refs:
+      - develop
+    changes:
+      - core/*
+      - error_handler_worker/*
+  script:
+    - echo "Deploying error_handler_worker dev..."
+    - cd /home/hienhoang/leonardo/worker/dev_worker/
+    - docker-compose pull
+    - docker-compose up -d
+  tags:
+  - ssh
+
+
+stag_build_error_handler_worker:
+  stage: build
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - error_handler_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building error_handler_worker stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd error_handler_worker
+    - cp -r ../core core
+    - docker build -t leo-etl-error-handler .
+    - rm -rf core
+    - docker tag leo-etl-error-handler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:stag
+  tags:
+  - docker
+
+stag_deploy_error_handler_worker:
+  stage: deploy
+  only:
+    refs:
+      - stag
+    changes:
+      - core/*
+      - error_handler_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Deploying error_handler_worker stag..."
+    - gcloud auth activate-service-account --key-file /credentials/stg-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+
+prod_build_error_handler_worker:
+  stage: build
+  only:
+    refs:
+      - prod
+    changes:
+      - core/*
+      - error_handler_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building error_handler_worker prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd error_handler_worker
+    - cp -r ../core core
+    - docker build -t leo-etl-error-handler .
+    - rm -rf core
+    - docker tag leo-etl-error-handler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:prod
+  tags:
+  - docker
+
+fresh_build_error_handler_worker:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - core/*
+      - error_handler_worker/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building error_handler_worker fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd error_handler_worker
+    - cp -r ../core core
+    - docker build -t leo-etl-error-handler .
+    - rm -rf core
+    - docker tag leo-etl-error-handler ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-etl-error-handler:fresh
+  tags:
+  - docker

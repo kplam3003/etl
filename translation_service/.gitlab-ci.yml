@@ -1,0 +1,163 @@
+dev_build_translation_service:
+  stage: build
+  only:
+    refs:
+      - develop
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "172.16.11.24:5000"
+  script:
+    - echo "Building translation_service dev..."
+    - cd translation_service
+    - cp -r ../core core
+    - docker build -t leo-api-translation .
+    - rm -rf core
+    - docker tag leo-api-translation ${CONTAINER_REGISTRY}/leo-etlplatform/leo-api-translation:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-api-translation:dev
+  tags:
+  - docker
+
+dev_deploy_translation_service:
+  stage: deploy
+  only:
+    refs:
+      - develop
+    changes:
+      - translation_service/*
+  script:
+    - echo "Deploying translation_service dev..."
+    - cd /home/hienhoang/leonardo/worker/dev_worker/
+    - docker-compose pull
+    - docker-compose up -d
+  tags:
+  - ssh
+
+
+qc_build_translation_service:
+  stage: build
+  only:
+    refs:
+      - qc
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Building translation_service qc..."
+    - cat /credentials/qc-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd translation_service
+    - cp -r ../core core
+    - docker build -t leo-api-translation .
+    - rm -rf core
+    - docker tag leo-api-translation ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:qc
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:qc
+  tags:
+  - docker
+
+qc_deploy_translation_service:
+  stage: deploy
+  only:
+    refs:
+      - qc
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-qc"
+  script:
+    - echo "Deploying translation_service qc..."
+    - gcloud auth activate-service-account --key-file /credentials/qc-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+
+stag_build_translation_service:
+  stage: build
+  only:
+    refs:
+      - stag
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building translation_service stag..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd translation_service
+    - cp -r ../core core
+    - docker build -t leo-api-translation .
+    - rm -rf core
+    - docker tag leo-api-translation ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:stag
+  tags:
+  - docker
+
+stag_deploy_translation_service:
+  stage: deploy
+  only:
+    refs:
+      - stag
+    changes:
+      - translation_service/*
+  variables:
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Deploying translation_service stag..."
+    - gcloud auth activate-service-account --key-file /credentials/stg-etl-ssh.json
+    - gcloud config set project ${GCP_PROJECT}
+    - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+  tags:
+  - gcloud
+
+
+prod_build_translation_service:
+  stage: build
+  only:
+    refs:
+      - prod
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building translation_service prod..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd translation_service
+    - cp -r ../core core
+    - docker build -t leo-api-translation .
+    - rm -rf core
+    - docker tag leo-api-translation ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:prod
+  tags:
+  - docker
+
+fresh_build_translation_service:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - translation_service/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building translation_service fresh..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd translation_service
+    - cp -r ../core core
+    - docker build -t leo-api-translation .
+    - rm -rf core
+    - docker tag leo-api-translation ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-api-translation:fresh
+  tags:
+  - docker
+

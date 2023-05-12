@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  sqlproxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.16
+    restart: always
+    command: /cloud_sql_proxy -instances={{GCP_PROJECT}}:{{GCP_DB_INSTANCE}}=tcp:0.0.0.0:5432
+  
+  {{PREFIX}}-data-flow-listener:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-case-study-orchestrator:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_data_consume_data_flow_listener
+    entrypoint: python app.py --listener data_consume_data_flow_listener
+
+  {{PREFIX}}-company-datasource-progress-updater:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-case-study-orchestrator:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_case_study_company_datasource_progress_updater
+    entrypoint: python app.py --listener case_study_company_datasource_progress_updater
+
+  {{PREFIX}}-case-study-after-task-listener:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-case-study-orchestrator:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_case_study_after_task
+    entrypoint: python app.py --listener case_study_after_task_listener
+
+  {{PREFIX}}-case-study-progress-listener:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-case-study-orchestrator:{{ENV}}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - LOGGER_NAME={{PREFIX}}_etl_case_study_progress_updater
+    command: python app.py --listener case_study_progress_updater
+
+

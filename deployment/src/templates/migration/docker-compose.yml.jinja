@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+
+  sqlproxy:
+    image: gcr.io/cloudsql-docker/gce-proxy:1.16
+    restart: always
+    command: /cloud_sql_proxy -instances={{GCP_PROJECT}}:{{GCP_DB_INSTANCE}}=tcp:0.0.0.0:5432
+  
+  {{PREFIX}}-data-migration:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-etl-data-migration:{{ENV}}
+    env_file:
+      - .env
+    environment:
+      - ETL_DATABASE_URI={{DATABASE_URI}}
+      - GCP_PROJECT_ID={{GCP_PROJECT}}
+      - GCP_DATAMART={{PREFIX}}_datamart
+      - GCP_DWH={{PREFIX}}_dwh
+      - GCP_STAGING={{PREFIX}}_staging
+      - GCP_EXPORT={{PREFIX}}_export
+      - GCP_DATA_QUALITY={{PREFIX}}_data_quality
+      - GCP_DATAMART_CS={{PREFIX}}_datamart_cs
+      - BUCKET_NAME={{GCP_BUCKET}}
+      - GCP_STORAGE_CORS_WEBURL={{GCP_STORAGE_CORS_WEBURL}}
+      - MONGODB_DATABASE_URI={{MONGODB_DATABASE_URI}}
+      - MONGODB_DATABASE_NAME={{MONGODB_DATABASE_NAME}}
+    depends_on:
+      - sqlproxy
+

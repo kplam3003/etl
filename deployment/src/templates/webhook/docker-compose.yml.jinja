@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  {{PREFIX}}-webhook-crawler:
+    image: {{CONTAINER_REGISTRY}}/{{GCP_PROJECT}}/leo-webhook-crawler:{{ENV}}
+    restart: always
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    
+    

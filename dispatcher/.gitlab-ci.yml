@@ -1,0 +1,157 @@
+
+dev_build_dispatcher:
+  stage: build
+  environment:
+    name: develop
+  only:
+    refs:
+      - develop
+    changes:
+      - dispatcher/*
+      - dispatcher/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+  script:
+    - echo "Building dispatcher dev..."
+    - cat /credentials/gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd dispatcher
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-crawler-dispatcher .
+    - rm -rf core certs
+    - docker tag leo-crawler-dispatcher ${CONTAINER_REGISTRY}/leo-etlplatform/leo-crawler-dispatcher:dev
+    - docker push ${CONTAINER_REGISTRY}/leo-etlplatform/leo-crawler-dispatcher:dev
+    # additional push for testing
+    - docker tag leo-crawler-dispatcher localhost:5000/leo-etlplatform/leo-crawler-dispatcher:dev
+    - docker push localhost:5000/leo-etlplatform/leo-crawler-dispatcher:dev
+  tags:
+  - docker
+
+# dev_deploy_dispatcher:
+#   stage: deploy
+#   only:
+#     refs:
+#       - develop
+#     changes:
+#       - dispatcher/*
+#       - dispatcher/**/*
+#   script:
+#     - echo "Deploying dispatcher dev..."
+#     - cd /home/hienhoang/leonardo/worker/dev_worker/
+#     - docker-compose pull
+#     - docker-compose up -d
+#   tags:
+#     - ssh
+
+stag_build_dispatcher:
+  stage: build
+  environment:
+    name: staging
+  only:
+    refs:
+      - stag
+    changes:
+      - dispatcher/*
+      - dispatcher/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "leo-etl-staging"
+  script:
+    - echo "Building dispatcher dev..."
+    - cat /credentials/stg-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd dispatcher
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-crawler-dispatcher .
+    - rm -rf core certs
+    - docker tag leo-crawler-dispatcher ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:stag
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:stag
+  tags:
+  - docker
+
+# stag_deploy_dispatcher:
+#   stage: deploy
+#   only:
+#     refs:
+#       - stag
+#     changes:
+#       - dispatcher/*
+#       - dispatcher/**/*
+#   variables:
+#     CONTAINER_REGISTRY: "gcr.io"
+#     GCP_PROJECT: "leo-etl-staging"
+#   script:
+#     - echo "Deploying dispatcher stag..."
+#     - gcloud auth activate-service-account --key-file /credentials/stg-etl-ssh.json
+#     - gcloud config set project ${GCP_PROJECT}
+#     - gcloud compute ssh hien_hoang@worker --zone=us-central1-a --quiet -- "cd worker && docker-compose pull && docker-compose up -d"
+#   tags:
+#   - gcloud
+
+prod_build_dispatcher:
+  stage: build
+  environment:
+    name: production
+  only:
+    refs:
+      - prod
+    changes:
+      - dispatcher/*
+      - dispatcher/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "valid-aquifer-305408"
+  script:
+    - echo "Building dispatcher dev..."
+    - cat /credentials/prod-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd dispatcher
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-crawler-dispatcher .
+    - rm -rf core certs
+    - docker tag leo-crawler-dispatcher ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:prod
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:prod
+  tags:
+  - docker
+
+fresh_build_dispatcher:
+  stage: build
+  environment:
+    name: fresh
+  only:
+    refs:
+      - fresh
+    changes:
+      - dispatcher/*
+      - dispatcher/**/*
+  variables:
+    CONTAINER_REGISTRY: "gcr.io"
+    GCP_PROJECT: "data-web-fresh"
+  script:
+    - echo "Building dispatcher dev..."
+    - cat /credentials/fresh-gcr.json | docker login -u _json_key --password-stdin https://${CONTAINER_REGISTRY}
+    - cd dispatcher
+    - cp -r ../core core
+    # export mongodb keyfiles
+    - mkdir certs
+    - echo ${MONGODB_ROOT_CA} | base64 -d > certs/root-ca.pem
+    - echo ${MONGODB_KEY_FILE} | base64 -d > certs/dpworker.pem
+    # build
+    - docker build -t leo-crawler-dispatcher .
+    - rm -rf core certs
+    - docker tag leo-crawler-dispatcher ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:fresh
+    - docker push ${CONTAINER_REGISTRY}/${GCP_PROJECT}/leo-crawler-dispatcher:fresh
+  tags:
+  - docker
